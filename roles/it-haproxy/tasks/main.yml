@@ -1,0 +1,9 @@
+---
+
+- include: update.yml
+#- include: dependencies.yml
+#- include: upgrade.yml
+#- include: install.yml
+#- include: remove.yml
+#- include: ntp.yml
+#- include: monit.yml 

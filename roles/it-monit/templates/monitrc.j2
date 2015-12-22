@@ -1,0 +1,69 @@
+###############################################################################
+## Monit control file
+###############################################################################
+##
+## Comments begin with a '#' and extend through the end of the line. Keywords
+## are case insensitive. All path's MUST BE FULLY QUALIFIED, starting with '/'.
+##
+## Below you will find examples of some frequently used statements. For
+## information about the control file and a complete list of statements and
+## options, please have a look in the Monit manual.
+##
+##
+###############################################################################
+## Global section
+###############################################################################
+
+set daemon {{monit.poll_period}}
+{% if monit.poll_start_delay is defined %}
+  with start delay {{monit.poll_start_delay}}
+{% endif %}
+
+set logfile {{monit.logfile}}
+
+set idfile /var/lib/monit/id
+
+set statefile /var/lib/monit/state
+
+{% if monit.email_enable -%}
+set mailserver {{monit.mailserver_host}}{% if monit.mailserver_port is defined %} port {{monit.mailserver_port}}{% endif %}
+
+{% if monit.mailserver_username is defined %}  username "{{monit.mailserver_username}}"{{'\n'}}{% endif %}
+{% if monit.mailserver_password is defined %}  password "{{monit.mailserver_password}}"{{'\n'}}{% endif %}
+{% if monit.mailserver_encryption is defined %}  using {{monit.mailserver_encryption}}{{'\n'}}{% endif %}
+{% if monit.mailserver_timeout is defined %}  with timeout {{monit.mailserver_timeout}} seconds{{'\n'}}{% endif %}
+
+{% if monit.eventqueue_enable -%}
+set eventqueue
+  basedir {{monit.eventqueue_directory}}
+  slots {{monit.eventqueue_slots | default('100')}}
+{% endif -%}
+
+set mail-format {
+  from: {{monit.mailformat_from}}
+  subject: {{monit.mailformat_subject}}
+  message: {{monit.mailformat_message}}
+}
+
+set alert {{monit.notify_email}} NOT ON { action, instance, pid, ppid }
+{% endif -%}
+
+set httpd port {{monit.port}}
+{% if monit.address is defined %}  use address {{monit.address}}{{'\n'}}{% endif %}
+{% for a in monit.allow %}  allow {{a}}{{'\n'}}{% endfor %}
+{% if monit.ssl %}  ssl enable
+  pemfile {{monit.cert}}
+{% endif %}
+
+
+###############################################################################
+## Services
+###############################################################################
+#
+# NTP as example
+#
+
+ check process ntpd with pidfile /var/run/ntpd.pid
+   start program = "/etc/init.d/ntp start"
+   stop  program = "/etc/init.d/ntp stop"
+   if failed host 127.0.0.1 port 123 type udp then alert

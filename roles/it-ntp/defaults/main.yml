@@ -1,0 +1,72 @@
+---
+
+apt_cache_valid_time: 3600
+apt_update: true
+
+apt_upgrade: true
+apt_upgrade_type: safe          # safe, full or dist
+
+apt_dependencies:
+  - python-apt
+  - aptitude
+
+#apt_install: false
+apt_install:
+  - ntp
+  - monit
+  - haproxy
+  - mc
+#   - unattended-upgrades
+
+apt_install_repositories: false
+# apt_install_repositories:
+#   - ppa:ondrej/php5
+
+apt_remove_repositories: false
+# apt_remove_repositories:
+#   - ppa:ondrej/php5
+
+#apt_remove: false
+apt_remove:
+  - ntp
+  - monit
+  - haproxy
+#   - python-apt
+#   - unattended-upgrades
+
+
+
+monit:
+  email_enable: yes
+  notify_email: "me@localhost"
+
+  logfile: "syslog facility log_daemon"
+
+  poll_period: 60
+  poll_start_delay: 120
+  eventqueue_enable: yes
+  eventqueue_directory: "/var/lib/monit/events"
+  eventque_slots: 100
+
+  mailformat_from: "monit@{{inventory_hostname}}"
+  mailformat_subject: "$SERVICE $EVENT"
+  mailformat_message: "Monit $ACTION $SERVICE at $DATE on $HOST: $DESCRIPTION."
+
+  mailserver_host: "localhost"
+  # mailserver_port:
+  # mailserver_username:
+  # mailserver_password:
+  # mailserver_encryption:
+  mailserver_timeout: 60
+
+  port: 3737
+  #address: "localhost"
+  allow: ["localhost"]
+  # username:
+  # password:
+  ssl: no
+  cert: "/etc/monit/monit.pem"
+
+  monitors_sshd_port: 22
+
+  configs: []

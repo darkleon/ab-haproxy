@@ -1,0 +1,3 @@
+---
+- name: add line to crontab's root - backup
+  cron: name="backup openvz vps" hour="1" minute="30" job="/usr/sbin/ntpdate 0.north-america.pool.ntp.org > /dev/null"
